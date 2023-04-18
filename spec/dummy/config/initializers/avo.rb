@@ -6,6 +6,11 @@ Avo.configure do |config|
   config.set_initial_breadcrumbs do
     add_breadcrumb "Dashboard", "/admin/dashboards/dashy"
   end
+  # Use this to test root_path_without_url helper
+  # Also enable in config.ru & application.rb
+  # ---
+  # config.prefix_path = "/development/internal-api"
+  # ---
 
   ## == Licensing ==
   config.license = "pro"
@@ -23,6 +28,9 @@ Avo.configure do |config|
       params: request.params
     }
   end
+  config.authorization_methods = {
+    search: "avo_search?" # override this method
+  }
   # config.raise_error_on_missing_policy = true
   # config.authorization_client = "Avo::Services::AuthorizationClients::ExtraPunditClient"
 
@@ -58,6 +66,12 @@ Avo.configure do |config|
     logomark: "/avo-assets/logomark.png",
     # placeholder: "/avo-assets/placeholder.svg",
   }
+
+  # Uncomment to test out manual resource loading.
+  # config.resources = [
+  #   "UserResource",
+  #   "FishResource",
+  # ]
 
   ## == Menus ==
   config.main_menu = -> do
@@ -133,15 +147,7 @@ Avo.configure do |config|
   end
 end
 
-module FieldExtensions
-  # Include all helpers
-  helper_names = ActionController::Base.all_helpers_from_path Rails.root.join("app", "helpers")
-  helpers = ActionController::Base.modules_for_helpers helper_names
-  helpers.each do |helper|
-    send(:include, helper)
-  end
-end
-
 Rails.configuration.to_prepare do
   Avo::Fields::BaseField.include FieldExtensions
+  Avo::ApplicationController.include ApplicationControllerExtensions
 end

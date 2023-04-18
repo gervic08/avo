@@ -27,7 +27,15 @@ class UserPolicy < ApplicationPolicy
     true
   end
 
+  def get_users?
+    true
+  end
+
   def act_on?
+    true
+  end
+
+  def avo_search?
     true
   end
 
@@ -67,16 +75,10 @@ class UserPolicy < ApplicationPolicy
     false
   end
 
-  def upload_attachments?
-    true
-  end
-
-  def download_attachments?
-    true
-  end
-
-  def delete_attachments?
-    true
+  [:upload, :download, :delete].each do |action|
+    define_method "#{action}_cv?" do
+      true
+    end
   end
 
   class Scope < Scope

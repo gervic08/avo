@@ -11,6 +11,12 @@ Rails.application.routes.draw do
     end
 
     mount Avo::Engine, at: Avo.configuration.root_path
+    # Uncomment to test constraints /123/en/admin
+    # scope ":course", constraints: {course: /\w+(-\w+)*/} do
+    #   scope ":locale", constraints: {locale: /\w[-\w]*/} do
+    #     mount Avo::Engine, at: Avo.configuration.root_path
+    #   end
+    # end
   end
 end
 
@@ -18,6 +24,7 @@ if defined? ::Avo
   Avo::Engine.routes.draw do
     scope :resources do
       get "courses/cities", to: "courses#cities"
+      get "users/get_users", to: "users#get_users"
     end
   end
 end

@@ -6,6 +6,8 @@ If you came across a bug or want to suggest a feature, feel free to [say somethi
 
 If you'd like to contribute code, the steps below will help you get up and running.
 
+## Legal
+
 By submitting the Contribution, You acknowledge that You have read this [Contributor License Agreement](https://avohq.io/cla) and agree to be bound by its terms.
 
 ## Elements naming
@@ -65,6 +67,17 @@ gem 'avo', path: '../avo'
 ```
 
 Avo's assets will not show up by default, resulting in 404 errors on `/avo-assets/avo.base.js` and `/avo-assets/avo.base.css`. To avoid this, you need to compile the asset bundles, and symlink them into `public/avo-assets`.
+
+First, make sure you have `yarn` installed and then install Avo's dependencies:
+```bash
+yarn install
+```
+
+Run the first build to generate the files `app/assets/builds/avo.base.js` and `app/assets/builds/avo.base.css`:
+
+```bash
+yarn build
+```
 
 Create symlinks for compiled assets into the `public` directory. You'll only need to do this once.
 

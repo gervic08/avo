@@ -7,6 +7,8 @@ Gem.loaded_specs["avo"].dependencies.each do |d|
     require "action_view/railtie"
   when "activestorage"
     require "active_storage/engine"
+  when "actiontext"
+    require "action_text/engine"
   else
     require d.name
   end
@@ -52,6 +54,12 @@ module Avo
     initializer "debug_exception_response_format" do |app|
       app.config.debug_exception_response_format = :api
       # app.config.logger = ::Logger.new(STDOUT)
+    end
+
+    initializer "avo.test_buddy" do |app|
+      if Avo::IN_DEVELOPMENT
+        Rails.autoloaders.main.push_dir Avo::Engine.root.join("spec", "helpers")
+      end
     end
 
     config.app_middleware.use(

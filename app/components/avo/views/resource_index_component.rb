@@ -74,7 +74,7 @@ class Avo::Views::ResourceIndexComponent < Avo::ResourceComponent
     if @reflection.present?
       args = {
         via_relation_class: reflection_model_class,
-        via_resource_id: @parent_model.id
+        via_resource_id: @parent_model.to_param
       }
 
       if @reflection.is_a? ActiveRecord::Reflection::ThroughReflection
@@ -83,10 +83,6 @@ class Avo::Views::ResourceIndexComponent < Avo::ResourceComponent
 
       if @reflection.is_a? ActiveRecord::Reflection::HasManyReflection
         args[:via_relation] = @reflection.name
-      end
-
-      if @reflection.parent_reflection.present? && @reflection.parent_reflection.inverse_of.present?
-        args[:via_relation] = @reflection.parent_reflection.inverse_of.name
       end
 
       if @reflection.inverse_of.present?
@@ -98,7 +94,9 @@ class Avo::Views::ResourceIndexComponent < Avo::ResourceComponent
   end
 
   def attach_path
-    Avo::App.root_path(paths: [request.env["PATH_INFO"], "new"])
+    current_path = CGI.unescape(request.env["PATH_INFO"]).split("/").select(&:present?)
+
+    Avo::App.root_path(paths: [*current_path, "new"])
   end
 
   def singular_resource_name
@@ -122,10 +120,19 @@ class Avo::Views::ResourceIndexComponent < Avo::ResourceComponent
     @resource.resource_description
   end
 
-  def hide_search_input
-    return true unless @resource.search_query.present?
+  def show_search_input
+    return false unless authorized_to_search?
+    return false unless @resource.search_query.present?
+    return false if field&.hide_search_input
 
-    field&.hide_search_input || false
+    true
+  end
+
+  def authorized_to_search?
+    # Hide the search if the authorization prevents it
+    return true unless @resource.authorization.has_action_method?("search")
+
+    @resource.authorization.authorize_action("search", raise_exception: false)
   end
 
   private
@@ -142,10 +149,10 @@ class Avo::Views::ResourceIndexComponent < Avo::ResourceComponent
     return unless @reflection.present?
 
     {
-      association: 'has_many',
+      association: "has_many",
       association_id: @reflection.name,
       class: reflection_model_class,
-      id: @parent_model.id
+      id: @parent_model.to_param
     }
   end
 end

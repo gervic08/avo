@@ -13,10 +13,13 @@ class UserResource < Avo::BaseResource
   self.resolve_find_scope = ->(model_class:) do
     model_class.friendly
   end
+  self.find_record_method = ->(model_class:, id:, params:) do
+    model_class.friendly.find id
+  end
   self.includes = [:posts, :post]
   self.devise_password_optional = true
 
-  field :id, as: :id, link_to_resource: true
+  field :id, as: :id, link_to_resource: true, sortable: false
   field :email, as: :gravatar, link_to_resource: true, as_avatar: :circle, only_on: :index
   heading "User Information"
   field :first_name, as: :text, placeholder: "John", stacked: true
@@ -77,7 +80,7 @@ class UserResource < Avo::BaseResource
   end
 
   tabs do
-    tab "Birthday", description: "hey you", hide_on: :show do
+    tab -> { "Birthday" }, description: "hey you", hide_on: :show do
       panel do
         field :birthday,
           as: :date,

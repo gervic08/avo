@@ -23,6 +23,8 @@ module Avo
     end
 
     def destroy
+      raise Avo::NotAuthorizedError.new unless authorized_to :delete
+
       attachment = ActiveStorage::Attachment.find(params[:attachment_id])
       path = resource_path(model: @model, resource: @resource)
 
@@ -33,6 +35,12 @@ module Avo
       else
         redirect_back fallback_location: path, notice: t("avo.failed_to_find_attachment")
       end
+    end
+
+    private
+
+    def authorized_to(action)
+      @resource.authorization.authorize_action("#{action}_#{params[:attachment_name]}?", record: @model, raise_exception: false)
     end
   end
 end
