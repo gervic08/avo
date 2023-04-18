@@ -29,7 +29,7 @@
       %>
   <% end %>
 
-  <% if can_detach? %>
+  <% if can_detach? && @reflection&.name.to_s == 'teams' || @reflection&.name.to_s == 'players' || @reflection&.name.to_s == 'staffs' || @reflection&.name.to_s == 'schedules' %>
     <%= form_with url: helpers.resource_detach_path(params[:resource_name], params[:id], params[:related_name], @resource.model.id),
       method: :delete,
       local: true,
@@ -53,7 +53,7 @@
     <% end %>
   <% end %>
 
-  <% if can_delete? %>
+  <% if can_delete? && @reflection&.name.to_s == '' %>
     <%= form_with url: helpers.resource_path(model: @resource.model, resource: @resource),
       method: :delete,
       class: 'flex items-center',
