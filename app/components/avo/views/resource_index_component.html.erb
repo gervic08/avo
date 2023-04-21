@@ -19,13 +19,15 @@
       <% if can_see_the_actions_button? %>
         <%= render Avo::ActionsComponent.new actions: @actions, resource: @resource, view: @view %>
       <% end %>
-      <% if can_see_the_create_button? && @reflection&.name.to_s == 'staffs' || @reflection&.name.to_s == 'players' || @reflection&.name.to_s == 'schedules' %>
-        <%= a_link create_path,
-          icon: 'heroicons/outline/plus',
-          'data-target': 'create',
-          style: :primary,
-          color: :primary do %>
-          <%= t('avo.create_new_item', item: singular_resource_name.downcase ) %>
+      <% if can_see_the_create_button? %>
+        <% if !@reflection.present? || @reflection&.name.to_s == 'staffs' || @reflection&.name.to_s == 'players' || @reflection&.name.to_s == 'schedules'  %>
+          <%= a_link create_path,
+            icon: 'heroicons/outline/plus',
+            'data-target': 'create',
+            style: :primary,
+            color: :primary do %>
+            <%= t('avo.create_new_item', item: singular_resource_name.downcase ) %>
+          <% end %>
         <% end %>
       <% end %>
     <% end %>
