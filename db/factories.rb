@@ -42,6 +42,20 @@ FactoryBot.define do
     progress { Faker::Number.between(from: 0, to: 100) }
   end
 
+  trait :with_files do
+    after(:create) do |project|
+      ["watch.jpg", "dummy-video.mp4"].each do |filename|
+        file = Rails.root.join("db", "seed_files", filename)
+        project.files.attach(io: file.open, filename: filename)
+      end
+
+      ["dummy-file.txt", "dummy-audio.mp3"].each do |filename|
+        file = Avo::Engine.root.join("spec", "dummy", filename)
+        project.files.attach(io: file.open, filename: filename)
+      end
+    end
+  end
+
   factory :comment do
     body { Faker::Lorem.paragraphs(number: rand(4...10)).join(" ") }
     posted_at { Time.now - rand(10...365).days }
@@ -98,6 +112,7 @@ FactoryBot.define do
     description { Faker::Address.community }
     status { ["open", "closed"].sample }
     tiny_description { Faker::Address.community }
+    city_center_area { [[[10.0, 11.2], [10.5, 11.9], [10.8, 12.0], [10.0, 11.2]]].to_json }
   end
 
   factory :product do

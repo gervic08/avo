@@ -30,6 +30,7 @@ module Avo
       attr_reader :nullable
       attr_reader :null_values
       attr_reader :format_using
+      attr_reader :autocomplete
       attr_reader :help
       attr_reader :default
       attr_reader :visible
@@ -40,7 +41,6 @@ module Avo
       attr_reader :stacked
 
       # Private options
-      attr_reader :updatable
       attr_reader :computable # if allowed to be computable
       attr_reader :computed # if block is present
       attr_reader :computed_value # the value after computation
@@ -71,6 +71,7 @@ module Avo
         @null_values = args[:null_values] || [nil, ""]
         @format_using = args[:format_using] || nil
         @placeholder = args[:placeholder]
+        @autocomplete = args[:autocomplete] || nil
         @help = args[:help] || nil
         @default = args[:default] || nil
         @visible = args[:visible]
@@ -86,7 +87,6 @@ module Avo
 
         @args = args
 
-        @updatable = !readonly
         @computable = true
         @computed = block.present?
         @computed_value = nil
@@ -255,6 +255,10 @@ module Avo
 
       def hidden_in_reflection?
         !visible_in_reflection?
+      end
+
+      def updatable
+        !is_readonly? && visible?
       end
 
       private
